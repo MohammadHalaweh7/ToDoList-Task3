@@ -116,3 +116,29 @@ deleteAllButton.onclick = function () {
     }
   });
 };
+
+// Search function
+function search(e) {
+  var result = "";
+  for (let i = 0; i < tasksArray.length; i++) {
+    if (tasksArray[i].name.toLowerCase().includes(e.value.toLowerCase())) {
+      result += `
+          <div class="taskDiv d-flex justify-content-between">
+      
+          <div class="taskAndAssignee">
+          <p class="taskNamePara pb-2">${tasksArray[i].name}</p>
+          <p class="assigneePara">${tasksArray[i].assignee}</p>
+          </div>
+      
+          <div class="icons">
+          <a onclick="deleteTask(${i})" class="deleteIcon mb-3 d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+          <a class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
+          </div>
+      
+          </div>
+      
+          `;
+    }
+  }
+  tasksData.innerHTML = result;
+}
