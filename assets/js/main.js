@@ -10,6 +10,14 @@ var tasksArray = [];
 
 var deleteIcon = document.querySelector(".deleteIcon");
 
+// to check if the local storage empty or not
+if (localStorage.getItem("tasksList") == null) {
+  tasksArray = [];
+} else {
+  tasksArray = JSON.parse(localStorage.getItem("tasksList"));
+  displayData();
+}
+// ----------------------------------------------------------------------------------------------------------
 // Add Task Button
 addTaskButton.onclick = function () {
   addTask();
@@ -23,6 +31,7 @@ function addTask() {
     assignee: assignee.value,
   };
   tasksArray.push(taskObject);
+  localStorage.setItem("tasksList", JSON.stringify(tasksArray));
 }
 // display Data in web page
 function displayData() {
@@ -57,5 +66,6 @@ function clear() {
 // delete task when click on delete icon
 function deleteTask(index) {
   tasksArray.splice(index, 1);
+  localStorage.setItem("tasksList", JSON.stringify(tasksArray));
   displayData();
 }
