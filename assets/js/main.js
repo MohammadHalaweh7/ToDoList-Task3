@@ -65,7 +65,22 @@ function clear() {
 
 // delete task when click on delete icon
 function deleteTask(index) {
-  tasksArray.splice(index, 1);
-  localStorage.setItem("tasksList", JSON.stringify(tasksArray));
-  displayData();
+  // sweet alert
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      tasksArray.splice(index, 1);
+      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
+      displayData();
+
+      Swal.fire("Deleted!", "Your task has been deleted.", "success");
+    }
+  });
 }
