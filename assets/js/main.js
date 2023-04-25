@@ -24,6 +24,15 @@ addTaskButton.onclick = function () {
   addTask();
   displayData();
   clear();
+
+  // sweet alert
+  Swal.fire({
+    position: "top-center",
+    icon: "success",
+    title: "The task has been added successfully",
+    showConfirmButton: false,
+    timer: 1500,
+  });
 };
 // add task function
 function addTask() {
@@ -88,7 +97,22 @@ function deleteTask(index) {
 
 // To delete all tasks
 deleteAllButton.onclick = function () {
-  localStorage.removeItem("tasksList");
-  tasksArray = [];
-  tasksData.innerHTML = "";
+  // sweet alert
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete all !",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem("tasksList");
+      tasksArray = [];
+      tasksData.innerHTML = "";
+
+      Swal.fire("Deleted!", "All task have been deleted.", "success");
+    }
+  });
 };
