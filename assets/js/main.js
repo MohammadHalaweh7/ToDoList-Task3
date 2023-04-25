@@ -9,6 +9,7 @@ var tasksData = document.getElementById("tasksData");
 var tasksArray = [];
 
 var deleteIcon = document.querySelector(".deleteIcon");
+var deleteAllButton = document.querySelector("#deleteAllButton");
 
 // to check if the local storage empty or not
 if (localStorage.getItem("tasksList") == null) {
@@ -84,3 +85,10 @@ function deleteTask(index) {
     }
   });
 }
+
+// To delete all tasks
+deleteAllButton.onclick = function () {
+  localStorage.removeItem("tasksList");
+  tasksArray = [];
+  tasksData.innerHTML = "";
+};
