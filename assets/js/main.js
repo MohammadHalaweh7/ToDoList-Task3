@@ -20,6 +20,8 @@ var countDone = document.querySelector("#countDone");
 var toggledBtn = document.querySelector("#toggledBtn");
 var toggle = 0;
 
+var nameAlert = document.getElementById("nameAlert");
+
 // to check if the local storage empty or not
 if (localStorage.getItem("tasksList") == null) {
   tasksArray = [];
@@ -281,7 +283,13 @@ taskName.onkeyup = function () {
   var namePattern = /^[A-Z][a-z]{2,10}$/;
   if (namePattern.test(taskName.value)) {
     addTaskButton.removeAttribute("disabled");
+    taskName.classList.add("is-valid");
+    taskName.classList.remove("is-invalid");
+    nameAlert.classList.add("d-none");
   } else {
     addTaskButton.setAttribute("disabled", "disabled");
+    taskName.classList.add("is-invalid");
+    nameAlert.classList.add("d-block");
+    nameAlert.classList.remove("d-none");
   }
 };
