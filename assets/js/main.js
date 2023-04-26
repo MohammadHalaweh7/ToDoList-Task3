@@ -5,6 +5,7 @@ var addTaskButton = document.getElementById("addTaskButton");
 var clearTaskButton = document.getElementById("clearTaskButton");
 
 var tasksData = document.getElementById("tasksData");
+var tasksDataDone = document.getElementById("tasksDataDone");
 
 var tasksArray = [];
 
@@ -13,12 +14,19 @@ var deleteAllButton = document.querySelector("#deleteAllButton");
 
 var currentIndex;
 
+var countTask = document.querySelector("#countTask");
+var countDone = document.querySelector("#countDone");
+
+var toggledBtn = document.querySelector("#toggledBtn");
+var toggle = 0;
+
 // to check if the local storage empty or not
 if (localStorage.getItem("tasksList") == null) {
   tasksArray = [];
 } else {
   tasksArray = JSON.parse(localStorage.getItem("tasksList"));
   displayData();
+  counter();
 }
 // ----------------------------------------------------------------------------------------------------------
 // Add Task Button
@@ -47,11 +55,14 @@ addTaskButton.onclick = function () {
   }
 
   displayData();
+  counter();
   clear();
 };
 // add task function
 function addTask() {
+  var done = 0;
   var taskObject = {
+    done: done,
     name: taskName.value,
     assignee: assignee.value,
   };
@@ -62,7 +73,8 @@ function addTask() {
 function displayData() {
   var result = "";
   for (let i = 0; i < tasksArray.length; i++) {
-    result += `
+    if (tasksArray[i].done == 0) {
+      result += `
           <div class="taskDiv d-flex justify-content-between">
       
           <div class="taskAndAssignee">
@@ -73,15 +85,44 @@ function displayData() {
           <div class="icons">
           <a onclick="deleteTask(${i})" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
           <a onclick="getTaskData(${i})" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
-          <a class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
+          <a onclick="TaskDone(${i})" class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
 
           </div>
       
           </div>
       
           `;
+    }
   }
   tasksData.innerHTML = result;
+}
+// display Data done in web page
+function displayDataConfirmed() {
+  var result = "";
+
+  for (let i = 0; i < tasksArray.length; i++) {
+    if (tasksArray[i].done == 1) {
+      result += `
+          <div class="taskDiv d-flex justify-content-between">
+      
+          <div class="taskAndAssignee">
+          <p class="taskNamePara pb-2">${tasksArray[i].name}</p>
+          <p class="assigneePara">${tasksArray[i].assignee}</p>
+          </div>
+      
+          <div class="icons">
+          <a onclick="deleteTask(${i})" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+          <a onclick="getTaskData(${i})" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
+          <a  class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
+          
+          </div>
+      
+          </div>
+      
+          `;
+    }
+  }
+  tasksDataDone.innerHTML = result;
 }
 
 // clear data after add task
@@ -106,6 +147,7 @@ function deleteTask(index) {
       tasksArray.splice(index, 1);
       localStorage.setItem("tasksList", JSON.stringify(tasksArray));
       displayData();
+      counter();
 
       Swal.fire("Deleted!", "Your task has been deleted.", "success");
     }
@@ -125,10 +167,10 @@ deleteAllButton.onclick = function () {
     confirmButtonText: "Yes, delete all !",
   }).then((result) => {
     if (result.isConfirmed) {
-      localStorage.removeItem("tasksList");
-      tasksArray = [];
-      tasksData.innerHTML = "";
-
+      tasksArray.splice(0);
+      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
+      displayData();
+      counter();
       Swal.fire("Deleted!", "All task have been deleted.", "success");
     }
   });
@@ -158,16 +200,18 @@ function search(e) {
           `;
     }
   }
+
   tasksData.innerHTML = result;
 }
 
+// to display data in text filed
 function getTaskData(index) {
   taskName.value = tasksArray[index].name;
   assignee.value = tasksArray[index].assignee;
   addTaskButton.innerHTML = "Update Task";
   currentIndex = index;
 }
-
+// to update data in task div
 function updateTask() {
   var taskObj = {
     name: taskName.value,
@@ -177,4 +221,57 @@ function updateTask() {
   tasksArray[currentIndex].assignee = taskObj.assignee;
 
   localStorage.setItem("tasksList", JSON.stringify(tasksArray));
+}
+// toggle button
+
+toggledBtn.addEventListener("click", function () {
+  if (toggle) {
+    tasksDataDone.style.display = "none";
+    tasksData.style.display = "block";
+    toggledBtn.innerHTML = "Confirmed";
+    displayData();
+    toggle = !toggle;
+  } else {
+    tasksDataDone.style.display = "block";
+    tasksData.style.display = "none";
+    toggledBtn.innerHTML = "TODO";
+    displayDataConfirmed();
+    toggle = !toggle;
+  }
+});
+
+// to check task is done or not
+function TaskDone(i) {
+  Swal.fire({
+    title: "Do you want to confirm that task is done?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    denyButtonText: `No`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      tasksArray[i].done = 1;
+      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
+      displayData();
+      counter();
+      Swal.fire("Task Is Done!", "", "success");
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
+  });
+}
+//
+//To count num of task done and not done
+function counter() {
+  var todoTasksCounter = 0;
+  var confirmedTasksCounter = 0;
+  tasksArray.map((item) => {
+    if (item.done) {
+      confirmedTasksCounter++;
+    } else {
+      todoTasksCounter++;
+    }
+  });
+  countTask.innerHTML = `" ${todoTasksCounter} "`;
+  countDone.innerHTML = `" ${confirmedTasksCounter} "`;
 }

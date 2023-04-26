@@ -51,16 +51,30 @@
             <div class="d-block mt-2">
                 <button type="button" id="deleteAllButton" class="btn btn-outline-danger">Delete all Tasks </button>
             </div>
+
+            <button id="toggledBtn" type="button" class="btn btn-secondary mt-2">Confirmed</button>
+
             <input id="" type="search" onkeyup="search(this)" placeholder="Search by task name.... "
-                class="form-control mt-5">
+                class="form-control mt-5 mb-5">
         </div>
 
         <!-- ------------------------------------------------------------------------------------------------------------- -->
 
         <div class="box2">
-            <div id="tasksData" class="mt-5">
+            <div class="detail">
+                <!-- <p class="countTask"></p>
+                <p class="countDone"></p> -->
+                <b>TODO: <span id="countTask">0</span>&nbsp;Confirmed: <span id="countDone">0</span> </b>
 
+                <div id="tasksData" class="mt-5">
+
+                </div>
+
+                <div id="tasksDataDone" class="mt-5">
+
+                </div>
             </div>
+
         </div>
 
     </div>
