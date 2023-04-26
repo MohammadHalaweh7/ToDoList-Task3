@@ -41,6 +41,7 @@ addTaskButton.onclick = function () {
       showConfirmButton: false,
       timer: 1500,
     });
+    addTaskButton.setAttribute("disabled", "disabled");
   } else {
     updateTask();
     // sweet alert
@@ -275,3 +276,12 @@ function counter() {
   countTask.innerHTML = `" ${todoTasksCounter} "`;
   countDone.innerHTML = `" ${confirmedTasksCounter} "`;
 }
+//Nmae validation--------------------------------------------
+taskName.onkeyup = function () {
+  var namePattern = /^[A-Z][a-z]{2,10}$/;
+  if (namePattern.test(taskName.value)) {
+    addTaskButton.removeAttribute("disabled");
+  } else {
+    addTaskButton.setAttribute("disabled", "disabled");
+  }
+};
