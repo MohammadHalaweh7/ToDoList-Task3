@@ -204,9 +204,22 @@ function search(e) {
     }
   }
 
-  tasksData.innerHTML = result;
+  debounceUpdate(result);
 }
-
+//Debounced search
+const debounceUpdate = debounce((result) => {
+  tasksData.innerHTML = result;
+});
+// debounce function
+function debounce(callback, delay = 1500) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+}
 // to display data in text filed
 function getTaskData(index) {
   taskName.value = tasksArray[index].name;
