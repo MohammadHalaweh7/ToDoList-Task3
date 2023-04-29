@@ -28,56 +28,62 @@
 </head>
 
 <body>
+    <header>
+        <nav>
+            <h1 class="d-flex justify-content-center">ToDo-List</h1>
+        </nav>
 
-    <h1 class="d-flex justify-content-center">ToDo-List</h1>
+        <div class="myContainer w-50 m-auto">
+            <div class="box1">
 
-    <div class="myContainer w-50 m-auto">
-        <div class="box1">
-
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Task Name<span class="text-danger">*</span></label>
-                <input id="taskName" type="text" class="form-control" id="exampleInputEmail1"
-                    aria-describedby="emailHelp" placeholder="Enter the task name">
-                    <div id="nameAlert" class="alert alert-danger">Please start name with capital letter and the name must be 8 character</div>
-            </div>
-
-            <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Assignee</label>
-                <input id="assignee" type="text" class="form-control" id="exampleInputPassword1">
-            </div>
-
-            <button disabled onclick="sayHello()" type="button" id="addTaskButton"
-                class="btn btn-outline-primary">Add-Task</button>
-            <div class="d-block mt-2">
-                <button type="button" id="deleteAllButton" class="btn btn-outline-danger">Delete all Tasks </button>
-            </div>
-
-            <button id="toggledBtn" type="button" class="btn btn-secondary mt-2">Confirmed</button>
-
-            <input id="" type="search" onkeyup="search(this)" placeholder="Search by task name.... "
-                class="form-control mt-5 mb-5">
-        </div>
-
-        <!-- ------------------------------------------------------------------------------------------------------------- -->
-
-        <div class="box2">
-            <div class="detail">
-                <!-- <p class="countTask"></p>
-                <p class="countDone"></p> -->
-                <b>TODO: <span id="countTask">0</span>&nbsp;Confirmed: <span id="countDone">0</span> </b>
-
-                <div id="tasksData" class="mt-5">
-
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Task Name<span
+                            class="text-danger">*</span></label>
+                    <input id="taskName" type="text" class="form-control" id="exampleInputEmail1"
+                        aria-describedby="emailHelp" placeholder="Enter the task name">
+                    <div id="nameAlert" class="alert alert-danger">Please start name with capital letter and the name
+                        must be 8 character</div>
                 </div>
 
-                <div id="tasksDataDone" class="mt-5">
-
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Assignee</label>
+                    <input id="assignee" type="text" class="form-control" id="exampleInputPassword1">
                 </div>
+
+                <button disabled onclick="sayHello()" type="button" id="addTaskButton"
+                    class="btn btn-outline-primary">Add-Task</button>
+                <div class="d-block mt-2">
+                    <button type="button" id="deleteAllButton" class="btn btn-outline-danger">Delete all Tasks </button>
+                </div>
+
+                <button id="toggledBtn" type="button" class="btn btn-secondary mt-2">Confirmed</button>
+
+                <input id="" type="search" onkeyup="search(this)" placeholder="Search by task name.... "
+                    class="form-control mt-5 mb-5">
+            </div>
+
+            <!-- ------------------------------------------------------------------------------------------------------------- -->
+
+            <div class="box2">
+                <div class="detail">
+                    <!-- <p class="countTask"></p>
+                    <p class="countDone"></p> -->
+                    <b>TODO: <span id="countTask">0</span>&nbsp;Confirmed: <span id="countDone">0</span> </b>
+
+                    <div id="tasksData" class="mt-5">
+
+                    </div>
+
+                    <div id="tasksDataDone" class="mt-5">
+
+                    </div>
+                </div>
+
             </div>
 
         </div>
+    </header>
 
-    </div>
 
 
     <!-- bootstarap links -->
