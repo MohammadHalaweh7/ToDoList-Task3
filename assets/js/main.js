@@ -60,6 +60,7 @@ addTaskButton.onclick = function () {
   displayData();
   counter();
   clear();
+  taskName.classList.remove("is-valid");
 };
 // add task function
 function addTask() {
