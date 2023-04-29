@@ -37,21 +37,19 @@
             <div class="inputsAndButtons">
 
                 <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Task Name<span
-                            class="text-danger">*</span></label>
-                    <input id="taskName" type="text" class="form-control" id="exampleInputEmail1"
-                        aria-describedby="emailHelp" placeholder="Enter the task name">
+                    <label for="taskName" class="form-label">Task Name<span class="text-danger">*</span></label>
+                    <input id="taskName" type="text" class="form-control" placeholder="Enter the task name"
+                        aria-describedby="basic-addon1">
                     <div id="nameAlert" class="alert alert-danger">Please start name with capital letter and the name
                         must be 8 character</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Assignee</label>
-                    <input id="assignee" type="text" class="form-control" id="exampleInputPassword1">
+                    <label for="assignee" class="form-label">Assignee</label>
+                    <input id="assignee" type="text" class="form-control">
                 </div>
 
-                <button disabled onclick="sayHello()" type="button" id="addTaskButton"
-                    class="btn btn-outline-primary">Add-Task</button>
+                <button disabled type="button" id="addTaskButton" class="btn btn-outline-primary">Add-Task</button>
                 <div class="d-block mt-2">
                     <button type="button" id="deleteAllButton" class="btn btn-outline-danger">Delete all Tasks </button>
                 </div>
