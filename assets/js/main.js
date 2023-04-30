@@ -1,142 +1,79 @@
-var taskName = document.getElementById("taskName");
-var assignee = document.getElementById("assignee");
+const LOCAL_STORAGE_KEY = "tasksList";
+const ADD_TASK_TEXT = "Add Task";
+const UPDATE_TASK_TEXT = "Update Task";
 
-var addTaskButton = document.getElementById("addTaskButton");
-var clearTaskButton = document.getElementById("clearTaskButton");
+const taskNameField = document.getElementById("taskName");
+const assigneeField = document.getElementById("assignee");
+const addButton = document.getElementById("addTaskButton");
+const tasksList = document.getElementById("tasksData");
+const warningAlert = document.getElementById("nameAlert");
 
-var tasksData = document.getElementById("tasksData");
-var tasksDataDone = document.getElementById("tasksDataDone");
+let activeTaskId;
+let isNonConfirmedListDisplayed = true;
 
-var tasksArray = [];
-
-var deleteIcon = document.querySelector(".deleteIcon");
-var deleteAllButton = document.querySelector("#deleteAllButton");
-
-var currentIndex;
-
-var countTask = document.querySelector("#countTask");
-var countDone = document.querySelector("#countDone");
-
-var toggledBtn = document.querySelector("#toggledBtn");
-var toggle = 0;
-
-var nameAlert = document.getElementById("nameAlert");
-
-// to check if the local storage empty or not
-if (localStorage.getItem("tasksList") == null) {
-  tasksArray = [];
-} else {
-  tasksArray = JSON.parse(localStorage.getItem("tasksList"));
-  displayData();
-  counter();
+function initialLoad() {
+  addEventHandlers();
+  refreshList();
 }
-// ----------------------------------------------------------------------------------------------------------
-// Add Task Button
-addTaskButton.onclick = function () {
-  if (addTaskButton.innerHTML == "Add-Task") {
-    addTask();
-    // sweet alert
-    Swal.fire({
-      position: "top-center",
-      icon: "success",
-      title: "The task has been added successfully",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    addTaskButton.setAttribute("disabled", "disabled");
-  } else {
-    updateTask();
-    // sweet alert
-    Swal.fire({
-      position: "top-center",
-      icon: "success",
-      title: "The task has been updated successfully",
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    document.getElementById("addTaskButton").innerHTML = "Add-Task";
-  }
 
-  displayData();
-  counter();
-  clear();
-  taskName.classList.remove("is-valid");
-};
+initialLoad();
+
+function getTasksList() {
+  const value = localStorage.getItem(LOCAL_STORAGE_KEY);
+  try {
+    return JSON.parse(value) || [];
+  } catch {
+    return [];
+  }
+}
+
+function setTasks(tasks) {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
+  } catch {
+    localStorage.setItem(LOCAL_STORAGE_KEY, "");
+  }
+}
+
 // add task function
 function addTask() {
-  var done = 0;
-  var taskObject = {
-    done: done,
-    name: taskName.value,
-    assignee: assignee.value,
+  const task = {
+    id: `${Math.random() * 2133}`,
+    isDone: false,
+    name: taskNameField.value,
+    assignee: assigneeField.value,
   };
-  tasksArray.push(taskObject);
-  localStorage.setItem("tasksList", JSON.stringify(tasksArray));
-}
-// display Data in web page
-function displayData() {
-  var result = "";
-  for (let i = 0; i < tasksArray.length; i++) {
-    if (tasksArray[i].done == 0) {
-      result += `
-          <div class="taskDiv d-flex justify-content-between">
-      
-          <div class="taskAndAssignee">
-          <p class="taskNamePara pb-2">${tasksArray[i].name}</p>
-          <p class="assigneePara">${tasksArray[i].assignee}</p>
-          </div>
-      
-          <div class="icons">
-          <a onclick="deleteTask(${i})" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
-          <a onclick="getTaskData(${i})" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
-          <a onclick="TaskDone(${i})" class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
 
-          </div>
-      
-          </div>
-      
-          `;
-    }
-  }
-  tasksData.innerHTML = result;
-}
-// display Data done in web page
-function displayDataConfirmed() {
-  var result = "";
-
-  for (let i = 0; i < tasksArray.length; i++) {
-    if (tasksArray[i].done == 1) {
-      result += `
-          <div class="taskDiv d-flex justify-content-between">
-      
-          <div class="taskAndAssignee">
-          <p class="taskNamePara pb-2">${tasksArray[i].name}</p>
-          <p class="assigneePara">${tasksArray[i].assignee}</p>
-          </div>
-      
-          <div class="icons">
-          <a onclick="deleteTask(${i})" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
-          <a onclick="getTaskData(${i})" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
-          <a  class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
-          
-          </div>
-      
-          </div>
-      
-          `;
-    }
-  }
-  tasksDataDone.innerHTML = result;
+  const tasks = getTasksList();
+  const newTasks = [...tasks, task];
+  setTasks(newTasks);
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: "The task has been added successfully",
+    showConfirmButton: false,
+    timer: 1500,
+  });
 }
 
-// clear data after add task
-function clear() {
-  taskName.value = " ";
-  assignee.value = " ";
+function refreshList(tasks = getTasksList()) {
+  const tasksHTML = tasks
+    .filter(({ isDone }) => (isNonConfirmedListDisplayed ? !isDone : isDone))
+    .map(buildHTMLTask);
+  tasksList.innerHTML = tasksHTML.join("");
+  updateCounters();
 }
 
-// delete task when click on delete icon
-function deleteTask(index) {
+function resetFields() {
+  taskNameField.value = "";
+  taskNameField.classList.remove("is-valid");
+  taskNameField.classList.remove("is-invalid");
+  assigneeField.value = "";
+  addButton.disabled = true;
+  addButton.innerHTML = ADD_TASK_TEXT;
+}
+
+function deleteTask(id) {
   // sweet alert
   Swal.fire({
     title: "Are you sure?",
@@ -146,164 +83,180 @@ function deleteTask(index) {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      tasksArray.splice(index, 1);
-      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
-      displayData();
-      counter();
+  }).then(({ isConfirmed }) => {
+    if (!isConfirmed) return;
 
-      Swal.fire("Deleted!", "Your task has been deleted.", "success");
-    }
+    const tasks = getTasksList().filter(task => task.id !== id);
+    setTasks(tasks);
+    refreshList();
+    if (activeTaskId === id) resetFields();
+
+    Swal.fire("Deleted!", "Your task has been deleted.", "success");
   });
 }
-
-// To delete all tasks
-deleteAllButton.onclick = function () {
-  // sweet alert
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete all !",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      tasksArray.splice(0);
-      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
-      displayData();
-      counter();
-      Swal.fire("Deleted!", "All task have been deleted.", "success");
-    }
-  });
-};
 
 // Search function
 function search(e) {
-  var result = "";
-  for (let i = 0; i < tasksArray.length; i++) {
-    if (tasksArray[i].name.toLowerCase().includes(e.value.toLowerCase())) {
-      result += `
-          <div class="taskDiv d-flex justify-content-between">
-      
-          <div class="taskAndAssignee">
-          <p class="taskNamePara pb-2">${tasksArray[i].name}</p>
-          <p class="assigneePara">${tasksArray[i].assignee}</p>
-          </div>
-      
-          <div class="icons">
-          <a onclick="deleteTask(${i})" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
-          <a onclick="getTaskData(${i})" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
-          <a class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
-          </div>
-      
-          </div>
-      
-          `;
-    }
-  }
+  const searchText = e.value;
+  if (!searchText) return;
 
-  debounceUpdate(result);
+  const allTasks = getTasksList();
+  const tasksToDisplay = allTasks.filter(({ name }) =>
+    name.toLowerCase().includes(searchText.toLowerCase())
+  );
+  refreshList(tasksToDisplay);
 }
-//Debounced search
-const debounceUpdate = debounce((result) => {
-  tasksData.innerHTML = result;
-});
-// debounce function
-function debounce(callback, delay = 1500) {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-}
+
 // to display data in text filed
-function getTaskData(index) {
-  taskName.value = tasksArray[index].name;
-  assignee.value = tasksArray[index].assignee;
-  addTaskButton.innerHTML = "Update Task";
-  currentIndex = index;
+function previewTask(id) {
+  const tasks = getTasksList();
+  const task = tasks.find(task => task.id === id);
+  taskNameField.value = task.name;
+  assigneeField.value = task.assignee;
+  addButton.innerHTML = UPDATE_TASK_TEXT;
+  addButton.removeAttribute("disabled");
+  activeTaskId = id;
 }
+
 // to update data in task div
 function updateTask() {
-  var taskObj = {
-    name: taskName.value,
-    assignee: assignee.value,
-  };
-  tasksArray[currentIndex].name = taskObj.name;
-  tasksArray[currentIndex].assignee = taskObj.assignee;
+  const tasks = getTasksList();
+  const newTasks = tasks.map(task => {
+    if (task.id === activeTaskId)
+      return { ...task, name: taskNameField.value, assignee: assigneeField.value };
+    return task;
+  });
+  setTasks(newTasks);
 
-  localStorage.setItem("tasksList", JSON.stringify(tasksArray));
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: "The task has been updated successfully",
+    showConfirmButton: false,
+    timer: 1500,
+  });
 }
-// toggle button
-
-toggledBtn.addEventListener("click", function () {
-  if (toggle) {
-    tasksDataDone.style.display = "none";
-    tasksData.style.display = "block";
-    toggledBtn.innerHTML = "Confirmed";
-    displayData();
-    toggle = !toggle;
-  } else {
-    tasksDataDone.style.display = "block";
-    tasksData.style.display = "none";
-    toggledBtn.innerHTML = "TODO";
-    displayDataConfirmed();
-    toggle = !toggle;
-  }
-});
 
 // to check task is done or not
-function TaskDone(i) {
+function toggleTaskCompletion(id) {
+  const tasks = getTasksList();
+  const task = tasks.find(task => task.id === id);
   Swal.fire({
-    title: "Do you want to confirm that task is done?",
+    title: `Do you want to confirm that task is ${task.isDone ? "undone" : "done"}?`,
     showDenyButton: true,
     showCancelButton: true,
     confirmButtonText: "Yes",
     denyButtonText: `No`,
-  }).then((result) => {
-    if (result.isConfirmed) {
-      tasksArray[i].done = 1;
-      localStorage.setItem("tasksList", JSON.stringify(tasksArray));
-      displayData();
-      counter();
-      Swal.fire("Task Is Done!", "", "success");
-    } else if (result.isDenied) {
-      Swal.fire("Changes are not saved", "", "info");
+  }).then(result => {
+    if (result.isDenied) {
+      return Swal.fire("Changes are not saved", "", "info");
     }
+    if (!result.isConfirmed) return;
+
+    const tasks = getTasksList();
+    const newTasks = tasks.map(task => {
+      if (task.id === id) return { ...task, isDone: !task.isDone };
+      return task;
+    });
+    setTasks(newTasks);
+    refreshList();
+    Swal.fire("Task Is Toggled!", "", "success");
   });
 }
 //
 //To count num of task done and not done
-function counter() {
-  var todoTasksCounter = 0;
-  var confirmedTasksCounter = 0;
-  tasksArray.map((item) => {
-    if (item.done) {
-      confirmedTasksCounter++;
-    } else {
-      todoTasksCounter++;
-    }
-  });
-  countTask.innerHTML = `" ${todoTasksCounter} "`;
-  countDone.innerHTML = `" ${confirmedTasksCounter} "`;
+function updateCounters(tasks = getTasksList()) {
+  const completedTasksCount = tasks.reduce((acc, item) => {
+    acc += item.isDone ? 1 : 0;
+    return acc;
+  }, 0);
+
+  const todoCountLabel = document.getElementById("countTask");
+  const doneCountLabel = document.getElementById("countDone");
+  doneCountLabel.innerHTML = completedTasksCount;
+  todoCountLabel.innerHTML = tasks.length - completedTasksCount;
 }
-//Nmae validation--------------------------------------------
-taskName.onkeyup = function () {
-  var namePattern = /^[A-Z][a-z]{2,10}$/;
-  if (namePattern.test(taskName.value)) {
-    addTaskButton.removeAttribute("disabled");
-    taskName.classList.add("is-valid");
-    taskName.classList.remove("is-invalid");
-    nameAlert.classList.add("d-none");
-  } else {
-    addTaskButton.setAttribute("disabled", "disabled");
-    taskName.classList.add("is-invalid");
-    nameAlert.classList.add("d-block");
-    nameAlert.classList.remove("d-none");
-  }
-};
+
+function isNameValid() {
+  const name = taskNameField.value;
+  const namePattern = /^[A-Z].{7,}$/;
+  return namePattern.test(name);
+}
+
+function buildHTMLTask(task) {
+  return `
+  <div class="taskDiv d-flex justify-content-between">
+
+  <div class="taskAndAssignee">
+  <p class="taskNamePara pb-2">${task.name}</p>
+  <p class="assigneePara">${task.assignee}</p>
+  </div>
+
+  <div class="icons">
+  <a onclick="deleteTask('${task.id}')" class="deleteIcon d-block text-danger fs-5" href="#"><i class="fa fa-trash" aria-hidden="true"></i></a>
+  <a onclick="previewTask('${task.id}')" class="readIcon d-block text-warning fs-5" href="#"><i class="fa fa-id-card" aria-hidden="true"></i></a>
+  <a onclick="toggleTaskCompletion('${task.id}')" class="readIcon d-block text-success fs-5" href="#"><i class="fa fa-check-circle" aria-hidden="true"></i></a>
+
+  </div>
+
+  </div>
+  `;
+}
+
+function addEventHandlers() {
+  addButton.onclick = function () {
+    if (addButton.innerHTML === ADD_TASK_TEXT) {
+      addTask();
+    } else {
+      updateTask();
+    }
+
+    refreshList();
+    resetFields();
+  };
+
+  const deleteAllButton = document.querySelector("#deleteAllButton");
+  deleteAllButton.onclick = function () {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete all !",
+    }).then(({ isConfirmed }) => {
+      if (!isConfirmed) return;
+      setTasks([]);
+      refreshList();
+      Swal.fire("Deleted!", "All task have been deleted.", "success");
+    });
+  };
+
+  taskNameField.onkeyup = function () {
+    if (!isNameValid()) {
+      addButton.disabled = true;
+      taskNameField.classList.add("is-invalid");
+      taskNameField.classList.remove("is-valid");
+      warningAlert.classList.add("d-block");
+      warningAlert.classList.remove("d-none");
+    } else {
+      addButton.removeAttribute("disabled");
+      taskNameField.classList.remove("is-invalid");
+      taskNameField.classList.add("is-valid");
+      warningAlert.classList.remove("d-block");
+      warningAlert.classList.add("d-none");
+    }
+  };
+
+  const changeViewButton = document.getElementById("toggledBtn");
+  changeViewButton.addEventListener("click", function () {
+    if (!isNonConfirmedListDisplayed) {
+      changeViewButton.innerHTML = "Confirmed";
+    } else {
+      changeViewButton.innerHTML = "TODO";
+    }
+    isNonConfirmedListDisplayed = !isNonConfirmedListDisplayed;
+    refreshList();
+  });
+}
