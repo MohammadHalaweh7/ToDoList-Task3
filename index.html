@@ -40,8 +40,8 @@
                     <label for="taskName" class="form-label">Task Name<span class="text-danger">*</span></label>
                     <input id="taskName" type="text" class="form-control" placeholder="Enter the task name"
                         aria-describedby="basic-addon1">
-                    <div id="nameAlert" class="alert alert-danger">Please start name with capital letter and the name
-                        must be 8 character</div>
+                    <div id="nameAlert" class="alert alert-danger">Please start name with an uppercase letter and is
+                        followed by at least 2 characters of any type.</div>
                 </div>
 
                 <div class="mb-3">
@@ -49,12 +49,10 @@
                     <input id="assignee" type="text" class="form-control">
                 </div>
 
-                <button disabled type="button" id="addTaskButton" class="btn btn-outline-primary">Add-Task</button>
+                <button disabled type="button" id="addTaskButton" class="btn btn-outline-primary">Add Task</button>
                 <div class="d-block mt-2">
                     <button type="button" id="deleteAllButton" class="btn btn-outline-danger">Delete all Tasks </button>
                 </div>
-
-                <button id="toggledBtn" type="button" class="btn btn-secondary mt-2">Confirmed</button>
 
                 <input id="" type="search" onkeyup="search(this)" placeholder="Search by task name.... "
                     class="form-control mt-5 mb-5">
@@ -62,10 +60,12 @@
 
             <!-- ------------------------------------------------------------------------------------------------------------- -->
 
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="toggledBtn">
+                <label class="form-check-label" for="toggledBtn">Filter by completed tasks</label>
+            </div>
             <div class="tasksBoard">
                 <div class="detail">
-                    <!-- <p class="countTask"></p>
-                    <p class="countDone"></p> -->
                     <b>TODO: <span id="countTask">0</span>&nbsp;Confirmed: <span id="countDone">0</span> </b>
 
                     <div id="tasksData" class="mt-5">
@@ -96,7 +96,7 @@
         crossorigin="anonymous"></script>
 
     <!-- js file -->
-    <script src="assets/js/main.js"> </script>
+    <script src="js/main.js"> </script>
 </body>
 
 </html>
